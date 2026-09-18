@@ -83,6 +83,30 @@ public class ChessPiece {
         return true;
     }
 
+    List<ChessMove> slide(ChessBoard board, ChessPosition myPosition, int rowChange, int colChange) {
+        List<ChessMove> movesPossible = new ArrayList<>();
+        int row = myPosition.getRow() + rowChange;
+        int col = myPosition.getColumn() + colChange;
+
+
+        ChessPosition move = new ChessPosition(row, col);
+
+        while ((move.getRow() <= 8 && move.getRow() >= 1) && (move.getColumn() <= 8 && move.getColumn() >= 1) && board.getPiece(move) == null) {
+            movesPossible.add(new ChessMove(myPosition, move, null));
+            row = row + rowChange;
+            col = col + colChange;
+            move = new ChessPosition(row, col);
+        }
+//problem child (its trying to look up the piece even if its an out of bounds error) Solution: make out of bounds function and recall it here to double check. replace everywhere
+//        if (board.getPiece(move) != null) {
+//            if (getTeamColor() != board.getPiece(move).getTeamColor()) {
+//                movesPossible.add(new ChessMove(myPosition, move, null));
+//            }
+//        }
+
+        return movesPossible;
+    }
+
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         ChessPiece piece = board.getPiece(myPosition);
 
@@ -94,22 +118,25 @@ public class ChessPiece {
             ChessPosition newPosition = new ChessPosition(row, col);
 
             //up up
-            row = myPosition.getRow() + 1;
-            col = myPosition.getColumn() + 1;
-            newPosition = new ChessPosition(row, col);
 
-            while (valid(newPosition, board)) {
-                if (board.getPiece(newPosition) != null) {
-                    if (getTeamColor() != board.getPiece(newPosition).getTeamColor()) {
-                        movesPossible.add(new ChessMove(myPosition, newPosition, null));
-                    }
-                    break;
-                }
-                row++;
-                col++;
-                movesPossible.add(new ChessMove(myPosition, newPosition, null));
-                newPosition = new ChessPosition(row, col);
-            }
+            movesPossible.addAll(slide(board, myPosition, 1, 1));
+
+//            row = myPosition.getRow() + 1;
+//            col = myPosition.getColumn() + 1;
+//            newPosition = new ChessPosition(row, col);
+//
+//            while (valid(newPosition, board)) {
+//                if (board.getPiece(newPosition) != null) {
+//                    if (getTeamColor() != board.getPiece(newPosition).getTeamColor()) {
+//                        movesPossible.add(new ChessMove(myPosition, newPosition, null));
+//                    }
+//                    break;
+//                }
+//                row++;
+//                col++;
+//                movesPossible.add(new ChessMove(myPosition, newPosition, null));
+//                newPosition = new ChessPosition(row, col);
+//            }
 
             // up down
             row = myPosition.getRow() + 1;
