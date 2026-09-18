@@ -61,7 +61,7 @@ public class ChessPiece {
             return false;
         }
         if (board.getPiece(position) != null) {
-            if (getTeamColor() == pieceColor) {
+            if (getTeamColor() == board.getPiece(position).getTeamColor()) {
                 return false;
             }
         }
@@ -85,7 +85,7 @@ public class ChessPiece {
 
             while (valid(newPosition, board)) {
                 if (board.getPiece(newPosition) != null) {
-                    if (getTeamColor() != pieceColor) {
+                    if (getTeamColor() != board.getPiece(newPosition).getTeamColor()) {
                         movesPossible.add(new ChessMove(myPosition, newPosition, null));
                     }
                     break;
@@ -103,7 +103,7 @@ public class ChessPiece {
 
             while (valid(newPosition, board)) {
                 if (board.getPiece(newPosition) != null) {
-                    if (getTeamColor() != pieceColor) {
+                    if (getTeamColor() != board.getPiece(newPosition).getTeamColor()) {
                         movesPossible.add(new ChessMove(myPosition, newPosition, null));
                     }
                     break;
@@ -120,7 +120,7 @@ public class ChessPiece {
 
             while (valid(newPosition, board)) {
                 if (board.getPiece(newPosition) != null) {
-                    if (getTeamColor() != pieceColor) {
+                    if (getTeamColor() != board.getPiece(newPosition).getTeamColor()) {
                         movesPossible.add(new ChessMove(myPosition, newPosition, null));
                     }
                     break;
@@ -137,7 +137,7 @@ public class ChessPiece {
 
             while (valid(newPosition, board)) {
                 if (board.getPiece(newPosition) != null) {
-                    if (getTeamColor() != pieceColor) {
+                    if (getTeamColor() != board.getPiece(newPosition).getTeamColor()) {
                         movesPossible.add(new ChessMove(myPosition, newPosition, null));
                     }
                     break;
