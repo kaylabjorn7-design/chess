@@ -243,6 +243,41 @@ public class ChessPiece {
         if (piece.getPieceType() == PieceType.QUEEN) {
             return movesPossible;
         }
+
+        if (piece.getPieceType() == PieceType.KNIGHT) {
+            int row = myPosition.getRow();
+            int col = myPosition.getColumn();
+
+            List<ChessPosition> knightMoves = List.of(
+                    new ChessPosition(row + 2, col + 1),
+                    new ChessPosition(row + 2, col - 1),
+                    new ChessPosition(row + 1, col + 2),
+                    new ChessPosition(row + 1, col - 2),
+                    new ChessPosition(row - 1, col + 2),
+                    new ChessPosition(row - 1, col - 2),
+                    new ChessPosition(row - 2, col + 1),
+                    new ChessPosition(row - 2, col - 1)
+            );
+
+            //if out of bounds don't add
+            //if not empty: if it doesn't match add else don't add
+            //else (if empty or doesn't match me) add
+
+            for (ChessPosition move : knightMoves) {
+                if (move.getRow() > 8 || move.getRow() < 1 || move.getColumn() > 8 || move.getColumn() < 1) {
+                    continue;
+                }
+                else if (board.getPiece(move) != null) {
+                    if (getTeamColor() != board.getPiece(move).getTeamColor()) {
+                        movesPossible.add(new ChessMove(myPosition, move, null));
+                    }
+                }
+                else {
+                    movesPossible.add(new ChessMove(myPosition, move, null));
+                }
+            }
+            return movesPossible;
+        }
         return movesPossible;
     }
 }
