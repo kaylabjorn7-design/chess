@@ -215,6 +215,41 @@ public class ChessPiece {
             }
             return movesPossible;
         }
+
+        if (piece.getPieceType() == PieceType.KING) {
+            int row = myPosition.getRow();
+            int col = myPosition.getColumn();
+
+            List<ChessPosition> knightMoves = List.of(
+                    new ChessPosition(row + 1, col + 1),
+                    new ChessPosition(row + 1, col - 1),
+                    new ChessPosition(row - 1, col + 1),
+                    new ChessPosition(row - 1, col - 1),
+                    new ChessPosition(row + 1, col),
+                    new ChessPosition(row - 1, col),
+                    new ChessPosition(row, col + 1),
+                    new ChessPosition(row, col - 1)
+            );
+
+            //if out of bounds don't add
+            //if not empty: if it doesn't match add else don't add
+            //else (if empty or doesn't match me) add
+
+            for (ChessPosition move : knightMoves) {
+                if (!inBounds(move)) {
+                    continue;
+                }
+                else if (board.getPiece(move) != null) {
+                    if (getTeamColor() != board.getPiece(move).getTeamColor()) {
+                        movesPossible.add(new ChessMove(myPosition, move, null));
+                    }
+                }
+                else {
+                    movesPossible.add(new ChessMove(myPosition, move, null));
+                }
+            }
+            return movesPossible;
+        }
         return movesPossible;
     }
 }
