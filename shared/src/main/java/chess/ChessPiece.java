@@ -83,7 +83,7 @@ public class ChessPiece {
         return true;
     }
 
-    boolean inBounds(ChessPosition myPosition, ChessPosition move) {
+    boolean inBounds(ChessPosition move) {
         if ((move.getRow() <= 8 && move.getRow() >= 1) && (move.getColumn() <= 8 && move.getColumn() >= 1)) {
             return true;
         }
@@ -98,18 +98,20 @@ public class ChessPiece {
 
         ChessPosition move = new ChessPosition(row, col);
 
-        while (inBounds(myPosition, move) && board.getPiece(move) == null) {
+        while (inBounds(move) && board.getPiece(move) == null) {
             movesPossible.add(new ChessMove(myPosition, move, null));
             row = row + rowChange;
             col = col + colChange;
             move = new ChessPosition(row, col);
         }
-//problem child (its trying to look up the piece even if its an out of bounds error) Solution: make out of bounds function and recall it here to double check. replace everywhere
-//        if (board.getPiece(move) != null) {
-//            if (getTeamColor() != board.getPiece(move).getTeamColor()) {
-//                movesPossible.add(new ChessMove(myPosition, move, null));
-//            }
-//        }
+
+        if (inBounds(move)) {
+            if (board.getPiece(move) != null) {
+                if (getTeamColor() != board.getPiece(move).getTeamColor()) {
+                    movesPossible.add(new ChessMove(myPosition, move, null));
+                }
+            }
+        }
 
         return movesPossible;
     }
