@@ -83,6 +83,13 @@ public class ChessPiece {
         return true;
     }
 
+    boolean inBounds(ChessPosition myPosition, ChessPosition move) {
+        if ((move.getRow() <= 8 && move.getRow() >= 1) && (move.getColumn() <= 8 && move.getColumn() >= 1)) {
+            return true;
+        }
+        return false;
+    }
+
     List<ChessMove> slide(ChessBoard board, ChessPosition myPosition, int rowChange, int colChange) {
         List<ChessMove> movesPossible = new ArrayList<>();
         int row = myPosition.getRow() + rowChange;
@@ -91,7 +98,7 @@ public class ChessPiece {
 
         ChessPosition move = new ChessPosition(row, col);
 
-        while ((move.getRow() <= 8 && move.getRow() >= 1) && (move.getColumn() <= 8 && move.getColumn() >= 1) && board.getPiece(move) == null) {
+        while (inBounds(myPosition, move) && board.getPiece(move) == null) {
             movesPossible.add(new ChessMove(myPosition, move, null));
             row = row + rowChange;
             col = col + colChange;
