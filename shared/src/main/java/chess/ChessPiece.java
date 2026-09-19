@@ -220,7 +220,7 @@ public class ChessPiece {
             int row = myPosition.getRow();
             int col = myPosition.getColumn();
 
-            List<ChessPosition> knightMoves = List.of(
+            List<ChessPosition> kingMoves = List.of(
                     new ChessPosition(row + 1, col + 1),
                     new ChessPosition(row + 1, col - 1),
                     new ChessPosition(row - 1, col + 1),
@@ -235,7 +235,7 @@ public class ChessPiece {
             //if not empty: if it doesn't match add else don't add
             //else (if empty or doesn't match me) add
 
-            for (ChessPosition move : knightMoves) {
+            for (ChessPosition move : kingMoves) {
                 if (!inBounds(move)) {
                     continue;
                 }
@@ -248,6 +248,84 @@ public class ChessPiece {
                     movesPossible.add(new ChessMove(myPosition, move, null));
                 }
             }
+            return movesPossible;
+        }
+
+        if(piece.getPieceType() == PieceType.PAWN) {
+
+            //if white/black
+                //base move: depending on color row +/- 1 if free
+                    //if on row 2/7 if free row +/- 2
+                //for row +/- 1 col + and - col
+                    //if piece and doesn't match
+                    //add move
+
+            if (getTeamColor() == ChessGame.TeamColor.WHITE) {
+                int row = myPosition.getRow();
+                int col = myPosition.getColumn();
+
+                ChessPosition move;
+
+                //1 forward
+                move = new ChessPosition (row + 1, col);
+                if (inBounds(move) && board.getPiece(move) == null) {
+                    movesPossible.add(new ChessMove(myPosition, move, null));
+                    if (myPosition.getRow() == 2) {
+                        move = new ChessPosition(row + 2, col);
+                        if (board.getPiece(move) == null) {
+                            movesPossible.add(new ChessMove(myPosition, move, null));
+                        }
+                    }
+                }
+                //capture to left diagonal
+                move = new ChessPosition(row + 1, col - 1);
+                if (inBounds(move) && board.getPiece(move) != null) {
+                    if (getTeamColor() != board.getPiece(move).getTeamColor()) {
+                        movesPossible.add(new ChessMove(myPosition, move, null));
+                    }
+                }
+                //capture to right diagonal
+                move = new ChessPosition(row + 1, col + 1);
+                if (inBounds(move) && board.getPiece(move) != null) {
+                    if (getTeamColor() != board.getPiece(move).getTeamColor()) {
+                        movesPossible.add(new ChessMove(myPosition, move, null));
+                    }
+                }
+            }
+
+            if (getTeamColor() == ChessGame.TeamColor.BLACK) {
+                int row = myPosition.getRow();
+                int col = myPosition.getColumn();
+
+                ChessPosition move;
+
+                //1 forward
+                move = new ChessPosition (row - 1, col);
+                if (inBounds(move) && board.getPiece(move) == null) {
+                    movesPossible.add(new ChessMove(myPosition, move, null));
+                    if (myPosition.getRow() == 7) {
+                        move = new ChessPosition(row - 2, col);
+                        if (board.getPiece(move) == null) {
+                            movesPossible.add(new ChessMove(myPosition, move, null));
+                        }
+                    }
+                }
+                //capture to left diagonal
+                move = new ChessPosition(row - 1, col + 1);
+                if (inBounds(move) && board.getPiece(move) != null) {
+                    if (getTeamColor() != board.getPiece(move).getTeamColor()) {
+                        movesPossible.add(new ChessMove(myPosition, move, null));
+                    }
+                }
+                //capture to right diagonal
+                move = new ChessPosition(row - 1, col - 1);
+                if (inBounds(move) && board.getPiece(move) != null) {
+                    if (getTeamColor() != board.getPiece(move).getTeamColor()) {
+                        movesPossible.add(new ChessMove(myPosition, move, null));
+                    }
+                }
+            }
+
             return movesPossible;
         }
         return movesPossible;
