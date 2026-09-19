@@ -91,7 +91,7 @@ public class ChessPiece {
     }
 
     List<ChessMove> slide(ChessBoard board, ChessPosition myPosition, int rowChange, int colChange) {
-        List<ChessMove> movesPossible = new ArrayList<>();
+        List<ChessMove> slidemoves = new ArrayList<>();
         int row = myPosition.getRow() + rowChange;
         int col = myPosition.getColumn() + colChange;
 
@@ -99,7 +99,7 @@ public class ChessPiece {
         ChessPosition move = new ChessPosition(row, col);
 
         while (inBounds(move) && board.getPiece(move) == null) {
-            movesPossible.add(new ChessMove(myPosition, move, null));
+            slidemoves.add(new ChessMove(myPosition, move, null));
             row = row + rowChange;
             col = col + colChange;
             move = new ChessPosition(row, col);
@@ -108,12 +108,21 @@ public class ChessPiece {
         if (inBounds(move)) {
             if (board.getPiece(move) != null) {
                 if (getTeamColor() != board.getPiece(move).getTeamColor()) {
-                    movesPossible.add(new ChessMove(myPosition, move, null));
+                    slidemoves.add(new ChessMove(myPosition, move, null));
                 }
             }
         }
 
-        return movesPossible;
+        return slidemoves;
+    }
+
+    List<ChessMove> promote(ChessPosition myPosition, ChessPosition move) {
+        List<ChessMove> promotionMoves = new ArrayList<>();
+        promotionMoves.add(new ChessMove(myPosition, move, PieceType.KNIGHT));
+        promotionMoves.add(new ChessMove(myPosition, move, PieceType.BISHOP));
+        promotionMoves.add(new ChessMove(myPosition, move, PieceType.ROOK));
+        promotionMoves.add(new ChessMove(myPosition, move, PieceType.QUEEN));
+        return promotionMoves;
     }
 
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
@@ -269,7 +278,12 @@ public class ChessPiece {
                 //1 forward
                 move = new ChessPosition (row + 1, col);
                 if (inBounds(move) && board.getPiece(move) == null) {
-                    movesPossible.add(new ChessMove(myPosition, move, null));
+                    if (move.getRow() == 8) {
+                        movesPossible.addAll(promote(myPosition, move));
+                    }
+                    else {
+                        movesPossible.add(new ChessMove(myPosition, move, null));
+                    }
                     if (myPosition.getRow() == 2) {
                         move = new ChessPosition(row + 2, col);
                         if (board.getPiece(move) == null) {
@@ -281,14 +295,24 @@ public class ChessPiece {
                 move = new ChessPosition(row + 1, col - 1);
                 if (inBounds(move) && board.getPiece(move) != null) {
                     if (getTeamColor() != board.getPiece(move).getTeamColor()) {
-                        movesPossible.add(new ChessMove(myPosition, move, null));
+                        if (move.getRow() == 8) {
+                            movesPossible.addAll(promote(myPosition, move));
+                        }
+                        else {
+                            movesPossible.add(new ChessMove(myPosition, move, null));
+                        }
                     }
                 }
                 //capture to right diagonal
                 move = new ChessPosition(row + 1, col + 1);
                 if (inBounds(move) && board.getPiece(move) != null) {
                     if (getTeamColor() != board.getPiece(move).getTeamColor()) {
-                        movesPossible.add(new ChessMove(myPosition, move, null));
+                        if (move.getRow() == 8) {
+                            movesPossible.addAll(promote(myPosition, move));
+                        }
+                        else {
+                            movesPossible.add(new ChessMove(myPosition, move, null));
+                        }
                     }
                 }
             }
@@ -302,7 +326,12 @@ public class ChessPiece {
                 //1 forward
                 move = new ChessPosition (row - 1, col);
                 if (inBounds(move) && board.getPiece(move) == null) {
-                    movesPossible.add(new ChessMove(myPosition, move, null));
+                    if (move.getRow() == 1) {
+                        movesPossible.addAll(promote(myPosition, move));
+                    }
+                    else {
+                        movesPossible.add(new ChessMove(myPosition, move, null));
+                    }
                     if (myPosition.getRow() == 7) {
                         move = new ChessPosition(row - 2, col);
                         if (board.getPiece(move) == null) {
@@ -314,14 +343,24 @@ public class ChessPiece {
                 move = new ChessPosition(row - 1, col + 1);
                 if (inBounds(move) && board.getPiece(move) != null) {
                     if (getTeamColor() != board.getPiece(move).getTeamColor()) {
-                        movesPossible.add(new ChessMove(myPosition, move, null));
+                        if (move.getRow() == 1) {
+                            movesPossible.addAll(promote(myPosition, move));
+                        }
+                        else {
+                            movesPossible.add(new ChessMove(myPosition, move, null));
+                        }
                     }
                 }
                 //capture to right diagonal
                 move = new ChessPosition(row - 1, col - 1);
                 if (inBounds(move) && board.getPiece(move) != null) {
                     if (getTeamColor() != board.getPiece(move).getTeamColor()) {
-                        movesPossible.add(new ChessMove(myPosition, move, null));
+                        if (move.getRow() == 1) {
+                            movesPossible.addAll(promote(myPosition, move));
+                        }
+                        else {
+                            movesPossible.add(new ChessMove(myPosition, move, null));
+                        }
                     }
                 }
             }
