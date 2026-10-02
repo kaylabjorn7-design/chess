@@ -56,7 +56,7 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
 
-    public void createbackLine(int row) {
+    public void createWhiteBackLine(int row) {
         ChessPiece rook = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
         ChessPosition position1 = new ChessPosition(row, 1);
         this.addPiece(position1, rook);
@@ -87,7 +87,7 @@ public class ChessBoard {
         //clear board
         squares = new ChessPiece[8][8];
 
-        createbackLine(1);
+        createWhiteBackLine(1);
 
         int col = 1;
         while (col <= 8) {

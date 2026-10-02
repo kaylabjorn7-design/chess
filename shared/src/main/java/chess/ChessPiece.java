@@ -68,20 +68,6 @@ public class ChessPiece {
      *
      * @return Collection of valid moves
      */
-    boolean valid(ChessPosition position, ChessBoard board) {
-        if (position.getRow() > 8 || position.getRow() < 1) {
-            return false;
-        }
-        if (position.getColumn() > 8 || position.getColumn() < 1) {
-            return false;
-        }
-        if (board.getPiece(position) != null) {
-            if (getTeamColor() == board.getPiece(position).getTeamColor()) {
-                return false;
-            }
-        }
-        return true;
-    }
 
     boolean inBounds(ChessPosition move) {
         if ((move.getRow() <= 8 && move.getRow() >= 1) && (move.getColumn() <= 8 && move.getColumn() >= 1)) {
