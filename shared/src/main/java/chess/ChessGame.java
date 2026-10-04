@@ -78,7 +78,32 @@ public class ChessGame {
         if (board.getPiece(startPosition) == null) {
             return null;
         }
-        return board.getPiece(startPosition).pieceMoves(board, startPosition);
+
+        ChessBoard boardAfterMove = new ChessBoard();
+
+        //copy real board to boardAfterMove
+        for (int r = 1; r <= 8; r++) {
+            for (int c = 1; c <= 8; c++) {
+                ChessPosition position = new ChessPosition(r, c);
+                ChessPiece piece = board.getPiece(position);
+                boardAfterMove.addPiece(position, piece);
+            }
+        }
+
+        Collection<ChessMove> validMoves = board.getPiece(startPosition).pieceMoves(board, startPosition);
+
+        for (ChessMove move : validMoves) {
+            ChessPiece myPiece = boardAfterMove.getPiece(move.getStartPosition());
+            boardAfterMove.addPiece(move.getEndPosition(), myPiece);
+            boardAfterMove.addPiece(move.getStartPosition(), null);
+            if(isInCheck(getTeamTurn())) {
+                validMoves.remove(move);
+            }
+        }
+
+        //if after move king is in check
+        //remove move
+        return validMoves;
     }
 
     boolean validMove(ChessMove move) {
