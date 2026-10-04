@@ -79,7 +79,6 @@ public class ChessGame {
             return null;
         }
 
-
         Collection<ChessMove> validMoves = realBoard.getPiece(startPosition).pieceMoves(realBoard, startPosition);
         Collection<ChessMove> removeMoves = new ArrayList<>();
 
@@ -87,7 +86,7 @@ public class ChessGame {
             currentBoard = realBoard;
             ChessBoard testBoard = new ChessBoard();
 
-            //copy real board to boardAfterMove
+            //copy real board to testBoard
             for (int r = 1; r <= 8; r++) {
                 for (int c = 1; c <= 8; c++) {
                     ChessPosition position = new ChessPosition(r, c);
@@ -102,7 +101,7 @@ public class ChessGame {
             testBoard.addPiece(move.getStartPosition(), null);
 
             //if king is in check remove move from validMoves
-            if(isInCheck(getTeamTurn())) {
+            if(isInCheck(myPiece.getTeamColor())) {
                 removeMoves.add(move);
 
             }
@@ -154,10 +153,30 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        //for move in valid moves
-        // if ChessPiece at ChessPosition is king
-        //other team is in check
-        return true;
+
+        //for piece on board that is !teamColor
+        for (int r = 1; r <= 8; r++) {
+            for (int c = 1; c <= 8; c++) {
+                ChessPosition position = new ChessPosition(r, c);
+                ChessPiece piece = getBoard().getPiece(position);
+                if (piece != null) {
+                    if (piece.getTeamColor() != teamColor) {
+                        //for move in possible moves
+                        Collection<ChessMove> possibleMoves = piece.pieceMoves(getBoard(), position);
+                        for (ChessMove move : possibleMoves) {
+                            // if ChessPiece at endPosition is king
+                            if (getBoard().getPiece(move.getEndPosition()) != null) {
+                                if (getBoard().getPiece(move.getEndPosition()).getPieceType() == ChessPiece.PieceType.KING) {
+                                    //team is in check
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**
