@@ -77,12 +77,11 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        ChessPiece myPiece = getBoard().getPiece(move.getStartPosition());
         if (validMove(move)) {
-
+            getBoard().addPiece(move.getEndPosition(), myPiece);
+            getBoard().addPiece(move.getStartPosition(), null);
         }
-            //we have 1 move if it's on the list of validMoves we make the move by changing the board
-            //set start position to null
-            //set end position to piece
         else {
             throw new InvalidMoveException();
         }
