@@ -355,4 +355,9 @@ public class ChessPiece {
         }
         return movesPossible;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s,%s", pieceColor, type);
+    }
 }
