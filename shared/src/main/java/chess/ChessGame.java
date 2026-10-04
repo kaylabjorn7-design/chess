@@ -58,6 +58,18 @@ public class ChessGame {
         return validMoves;
     }
 
+    boolean validMove(ChessMove move) {
+        ChessPosition movePosition = move.getEndPosition();
+
+        for (ChessMove _move : validMoves(movePosition)) {
+            if (_move == move) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * Makes a move in the chess game
      *
@@ -65,7 +77,15 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        if (validMove(move)) {
+
+        }
+            //we have 1 move if it's on the list of validMoves we make the move by changing the board
+            //set start position to null
+            //set end position to piece
+        else {
+            throw new InvalidMoveException();
+        }
     }
 
     /**
@@ -78,6 +98,7 @@ public class ChessGame {
         //for move in valid moves
         // if ChessPiece at ChessPosition is king
         //other team is in check
+        return true;
     }
 
     /**
