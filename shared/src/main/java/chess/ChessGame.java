@@ -73,36 +73,46 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        ChessBoard board = getBoard();
+        ChessBoard realBoard = getBoard();
 
-        if (board.getPiece(startPosition) == null) {
+        if (realBoard.getPiece(startPosition) == null) {
             return null;
         }
 
-        ChessBoard boardAfterMove = new ChessBoard();
 
-        //copy real board to boardAfterMove
-        for (int r = 1; r <= 8; r++) {
-            for (int c = 1; c <= 8; c++) {
-                ChessPosition position = new ChessPosition(r, c);
-                ChessPiece piece = board.getPiece(position);
-                boardAfterMove.addPiece(position, piece);
-            }
-        }
-
-        Collection<ChessMove> validMoves = board.getPiece(startPosition).pieceMoves(board, startPosition);
+        Collection<ChessMove> validMoves = realBoard.getPiece(startPosition).pieceMoves(realBoard, startPosition);
+        Collection<ChessMove> removeMoves = new ArrayList<>();
 
         for (ChessMove move : validMoves) {
-            ChessPiece myPiece = boardAfterMove.getPiece(move.getStartPosition());
-            boardAfterMove.addPiece(move.getEndPosition(), myPiece);
-            boardAfterMove.addPiece(move.getStartPosition(), null);
+            currentBoard = realBoard;
+            ChessBoard testBoard = new ChessBoard();
+
+            //copy real board to boardAfterMove
+            for (int r = 1; r <= 8; r++) {
+                for (int c = 1; c <= 8; c++) {
+                    ChessPosition position = new ChessPosition(r, c);
+                    ChessPiece piece = realBoard.getPiece(position);
+                    testBoard.addPiece(position, piece);
+                }
+            }
+            //make hypothetical move on testBoard
+            currentBoard = testBoard;
+            ChessPiece myPiece = testBoard.getPiece(move.getStartPosition());
+            testBoard.addPiece(move.getEndPosition(), myPiece);
+            testBoard.addPiece(move.getStartPosition(), null);
+
+            //if king is in check remove move from validMoves
             if(isInCheck(getTeamTurn())) {
-                validMoves.remove(move);
+                removeMoves.add(move);
+
             }
         }
+        currentBoard = realBoard;
 
-        //if after move king is in check
-        //remove move
+        for (ChessMove move : removeMoves) {
+            validMoves.remove(move);
+        }
+
         return validMoves;
     }
 
