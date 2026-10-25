@@ -8,6 +8,7 @@ import dataaccess.MemoryGameDAO;
 import dataaccess.MemoryUserDAO;
 import io.javalin.*;
 import service.ClearService;
+import service.GamesService;
 import service.UserService;
 
 public class Server {
@@ -37,6 +38,11 @@ public class Server {
         javalin.post("/user", userHandler::handleRegister);
         javalin.post("/session", userHandler::handleLogin);
         javalin.delete("/session", userHandler::handleLogout);
+
+        //List games
+        GamesService gamesService = new GamesService(memoryGameDAO, memoryAuthDAO);
+        GamesHandler gamesHandler = new GamesHandler(gamesService);
+        javalin.get("/game", gamesHandler::handleListGames);
     }
 
     public int run(int desiredPort) {
