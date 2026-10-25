@@ -31,11 +31,12 @@ public class Server {
         ClearHandler clearHandler = new ClearHandler(clearService);
         javalin.delete("/db", clearHandler::handleClear);
 
-        //register
+        //register, login, logout
         UserService userService = new UserService(memoryUserDAO, memoryAuthDAO);
         UserHandler userHandler = new UserHandler(userService);
         javalin.post("/user", userHandler::handleRegister);
         javalin.post("/session", userHandler::handleLogin);
+        javalin.delete("/session", userHandler::handleLogout);
     }
 
     public int run(int desiredPort) {

@@ -64,4 +64,22 @@ public class UserHandler {
             ctx.json(Map.of("message","Error: database failure"));
         }
     }
+
+    public void handleLogout(Context ctx) {
+        try {
+            String authToken = ctx.header("authorization");
+            userService.logout(authToken);
+
+            ctx.status(200);
+            ctx.result("{}");
+        }
+        catch (UnauthorizedException e) {
+            ctx.status(401);
+            ctx.json(Map.of("message","Error: unauthorized"));
+        }
+        catch (DataAccessException e) {
+            ctx.status(500);
+            ctx.json(Map.of("message","Error: database failure"));
+        }
+    }
 }
