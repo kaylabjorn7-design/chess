@@ -2,9 +2,13 @@ package service;
 
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
+import dataaccess.MemoryAuthDAO;
 import dataaccess.UserDAO;
+import dto.LoginRequest;
+import dto.LoginResult;
 import dto.RegisterRequest;
 import dto.RegisterResult;
+import io.javalin.http.UnauthorizedResponse;
 import model.AuthData;
 import model.UserData;
 
@@ -45,5 +49,37 @@ public class UserService {
         authDAO.createAuth(authData);
 
         return new RegisterResult(registerRequest.username(), authToken);
+    }
+
+    public LoginResult login(LoginRequest loginRequest)
+            throws BadRequestException, DataAccessException, UnauthorizedException {
+        if (loginRequest == null ||
+                loginRequest.username() == null ||
+                loginRequest.username().isBlank() ||
+                loginRequest.password() == null ||
+                loginRequest.password().isBlank()) {
+            throw new BadRequestException("Error: bad request");
+        }
+
+        UserData userData = userDAO.getUser(loginRequest.username());
+
+        if (userData == null) {
+            throw new UnauthorizedException("Error: unauthorized");
+        }
+        if (!loginRequest.password().equals(userData.password())) {
+            throw new UnauthorizedException("Error: unauthorized");
+        }
+        String authToken = UUID.randomUUID().toString();
+        AuthData authData = new AuthData(authToken, loginRequest.username());
+        authDAO.createAuth(authData);
+
+        return new LoginResult(loginRequest.username(), authToken);
+    }
+
+    public void logout(String authToken) throws DataAccessException, UnauthorizedException {
+        if(authDAO.findAuth(authToken) == null) {
+            throw new UnauthorizedException("Error: unauthorized");
+        }
+        authDAO.deleteAuth(authToken);
     }
 }

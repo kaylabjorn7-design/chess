@@ -35,6 +35,7 @@ public class Server {
         UserService userService = new UserService(memoryUserDAO, memoryAuthDAO);
         UserHandler userHandler = new UserHandler(userService);
         javalin.post("/user", userHandler::handleRegister);
+        javalin.post("/session", userHandler::handleLogin);
     }
 
     public int run(int desiredPort) {

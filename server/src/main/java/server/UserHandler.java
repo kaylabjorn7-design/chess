@@ -1,11 +1,14 @@
 package server;
 
 import dataaccess.DataAccessException;
+import dto.LoginRequest;
+import dto.LoginResult;
 import dto.RegisterRequest;
 import dto.RegisterResult;
 import io.javalin.http.Context;
 import service.AlreadyTakenException;
 import service.BadRequestException;
+import service.UnauthorizedException;
 import service.UserService;
 
 import java.util.Map;
@@ -33,6 +36,28 @@ public class UserHandler {
         catch (AlreadyTakenException e) {
             ctx.status(403);
             ctx.json(Map.of("message","Error: already taken"));
+        }
+        catch (DataAccessException e) {
+            ctx.status(500);
+            ctx.json(Map.of("message","Error: database failure"));
+        }
+    }
+
+    public void handleLogin(Context ctx) {
+        try {
+            LoginRequest loginRequest = ctx.bodyAsClass(LoginRequest.class);
+            LoginResult loginResult = userService.login(loginRequest);
+
+            ctx.status(200);
+            ctx.json(loginResult);
+        }
+        catch (BadRequestException e) {
+            ctx.status(400);
+            ctx.json(Map.of("message","Error: bad request"));
+        }
+        catch (UnauthorizedException e) {
+            ctx.status(401);
+            ctx.json(Map.of("message","Error: unauthorized"));
         }
         catch (DataAccessException e) {
             ctx.status(500);
