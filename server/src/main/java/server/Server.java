@@ -39,11 +39,12 @@ public class Server {
         javalin.post("/session", userHandler::handleLogin);
         javalin.delete("/session", userHandler::handleLogout);
 
-        //List games, create game
+        //list games, create game, join game
         GamesService gamesService = new GamesService(memoryGameDAO, memoryAuthDAO);
         GamesHandler gamesHandler = new GamesHandler(gamesService);
         javalin.get("/game", gamesHandler::handleListGames);
         javalin.post("/game", gamesHandler::handleCreateGame);
+        javalin.put("/game", gamesHandler::handleJoinGame);
     }
 
     public int run(int desiredPort) {

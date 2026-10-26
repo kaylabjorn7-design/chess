@@ -1,12 +1,10 @@
 package server;
 
 import dataaccess.DataAccessException;
-import dto.CreateGameRequest;
-import dto.CreateGameResult;
-import dto.GameSummary;
-import dto.ListGamesResult;
+import dto.*;
 import io.javalin.http.Context;
 import model.GameData;
+import service.AlreadyTakenException;
 import service.BadRequestException;
 import service.GamesService;
 import service.UnauthorizedException;
@@ -77,6 +75,34 @@ public class GamesHandler {
             ctx.json(Map.of("message","Error: database failure"));
         }
 
+    }
+
+    public void handleJoinGame(Context ctx) {
+        try {
+            String authToken = ctx.header("authorization");
+            JoinGameRequest joinGameRequest = ctx.bodyAsClass(JoinGameRequest.class);
+
+            gamesService.joinGame(authToken, joinGameRequest);
+
+            ctx.status(200);
+            ctx.result("{}");
+        }
+        catch (BadRequestException e) {
+            ctx.status(400);
+            ctx.json(Map.of("message","Error: bad request"));
+        }
+        catch (UnauthorizedException e) {
+            ctx.status(401);
+            ctx.json(Map.of("message","Error: unauthorized"));
+        }
+        catch (AlreadyTakenException e) {
+            ctx.status(403);
+            ctx.json(Map.of("message","Error: already taken"));
+        }
+        catch (DataAccessException e) {
+            ctx.status(500);
+            ctx.json(Map.of("message","Error: database failure"));
+        }
     }
 }
 
