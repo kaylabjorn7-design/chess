@@ -125,8 +125,8 @@ public class ChessGame {
         if (validMoves(movePosition) == null) {
             return false;
         }
-        for (ChessMove _move : validMoves(movePosition)) {
-            if (_move.equals(move)) {
+        for (ChessMove chessMove : validMoves(movePosition)) {
+            if (chessMove.equals(move)) {
                 return true;
             }
         }
@@ -205,22 +205,28 @@ public class ChessGame {
      * @param teamColor which team to check for checkmate
      * @return True if the specified team is in checkmate
      */
-    public boolean isInCheckmate(TeamColor teamColor) {
-        if (isInCheck(teamColor)) {
-            for (int r = 1; r <= 8; r++) {
-                for (int c = 1; c <= 8; c++) {
-                    ChessPosition position = new ChessPosition(r, c);
-                    ChessPiece piece = getBoard().getPiece(position);
-                    if (piece != null) {
-                        if (piece.getTeamColor() == teamColor) {
-                            if (!validMoves(position).isEmpty()) {
-                                return false;
-                            }
+    public boolean hasValidMoves(TeamColor teamColor) {
+        for (int r = 1; r <= 8; r++) {
+            for (int c = 1; c <= 8; c++) {
+                ChessPosition position = new ChessPosition(r, c);
+                ChessPiece piece = getBoard().getPiece(position);
+                if (piece != null) {
+                    if (piece.getTeamColor() == teamColor) {
+                        if (!validMoves(position).isEmpty()) {
+                            return false;
                         }
                     }
                 }
             }
-            return true;
+        }
+        return true;
+    }
+
+    public boolean isInCheckmate(TeamColor teamColor) {
+        if (isInCheck(teamColor)) {
+            if (hasValidMoves(teamColor)) {
+                return true;
+            }
         }
         return false;
     }
@@ -236,20 +242,10 @@ public class ChessGame {
         if (isInCheck(teamColor)) {
             return false;
         }
-        for (int r = 1; r <= 8; r++) {
-            for (int c = 1; c <= 8; c++) {
-                ChessPosition position = new ChessPosition(r, c);
-                ChessPiece piece = getBoard().getPiece(position);
-                if (piece != null) {
-                    if (piece.getTeamColor() == teamColor) {
-                        if (!validMoves(position).isEmpty()) {
-                            return false;
-                        }
-                    }
-                }
-            }
+        if (hasValidMoves(teamColor)) {
+            return true;
         }
-        return true;
+        return false;
     }
 
     /**
