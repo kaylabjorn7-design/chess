@@ -1,6 +1,7 @@
 package dataaccess;
 
 import java.sql.*;
+import java.util.Arrays;
 import java.util.Properties;
 
 public class DatabaseManager {
@@ -16,6 +17,36 @@ public class DatabaseManager {
         loadPropertiesFromResources();
     }
 
+    static public void createTables() throws DataAccessException {
+        String[] statements = {
+                "CREATE TABLE IF NOT EXISTS users (" +
+                "username VARCHAR(256) PRIMARY KEY, " +
+                "password VARCHAR(256) NOT NULL, " +
+                "email VARCHAR(256) NOT NULL)",
+
+                "CREATE TABLE IF NOT EXISTS auth (" +
+                "authToken VARCHAR(256) PRIMARY KEY, " +
+                "username VARCHAR(256) NOT NULL)",
+
+                "CREATE TABLE IF NOT EXISTS games (" +
+                "gameID INT PRIMARY KEY AUTO_INCREMENT, " +
+                "whiteUsername VARCHAR(256), " +
+                "blackUsername VARCHAR(256), " +
+                "gameName VARCHAR(256) NOT NULL, " +
+                "game TEXT NOT NULL)"
+        };
+
+        try (var conn = DatabaseManager.getConnection()) {
+            for (String statement : statements) {
+                try (var preparedStatement = conn.prepareStatement(statement)) {
+                    preparedStatement.executeUpdate();
+                }
+            }
+        }
+        catch (SQLException ex) {
+            throw new DataAccessException("failed to create tables", ex);
+        }
+    }
     /**
      * Creates the database if it does not already exist.
      */
