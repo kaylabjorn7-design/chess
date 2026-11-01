@@ -101,7 +101,29 @@ public class SqlGameDAO {
         return null;
     }
 
+    public void updateGame(GameData data) throws DataAccessException {
+        var sql = "UPDATE games SET whiteUsername = ?, blackUsername = ?, gameName = ?, game = ? WHERE gameID = ?";
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(sql)) {
 
+                Gson gson = new Gson();
+                String json = gson.toJson(data.game());
+
+                preparedStatement.setString(1, data.whiteUsername());
+                preparedStatement.setString(2, data.blackUsername());
+                preparedStatement.setString(3, data.gameName());
+                preparedStatement.setString(4, json);
+                preparedStatement.setInt(5, data.gameID());
+                int updateInt = preparedStatement.executeUpdate();
+                if (updateInt == 0) {
+                    throw new DataAccessException("Game does not exist");
+                }
+            }
+        }
+        catch (SQLException ex) {
+            throw new DataAccessException("failed to update", ex);
+        }
+    }
 
     public void clear() throws DataAccessException {
         var sql = "DELETE FROM games";
