@@ -13,11 +13,22 @@ import service.ClearService;
 import service.GamesService;
 import service.UserService;
 
+import dataaccess.DatabaseManager;
+import dataaccess.DataAccessException;
+
 public class Server {
 
     private final Javalin javalin;
 
+
     public Server() {
+        try {
+            DatabaseManager.createDatabase();
+            DatabaseManager.createTables();
+        } catch (DataAccessException ex) {
+            throw new RuntimeException("Failed to initialize database", ex);
+        }
+
         javalin = Javalin.create(config -> {
             config.staticFiles.add("web");
             config.jsonMapper(new JavalinGson());
