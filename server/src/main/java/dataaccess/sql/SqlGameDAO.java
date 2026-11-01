@@ -1,5 +1,6 @@
 package dataaccess.sql;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
@@ -39,6 +40,32 @@ public class SqlGameDAO {
             throw new DataAccessException("failed to create game", ex);
         }
         throw new DataAccessException("no gameID returned");
+    }
+
+    public GameData getGame(int gameID) throws DataAccessException {
+        var sql = "SELECT * FROM games WHERE gameID = ?";
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(sql)) {
+                preparedStatement.setInt(1, gameID);
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                if (resultSet.next()) {
+                    Gson gson = new Gson();
+
+                    String whiteUsername = resultSet.getString("whiteUsername");
+                    String blackUsername = resultSet.getString("blackUsername");
+                    String gameName = resultSet.getString("gameName");
+
+                    return new GameData(
+                            gameID, whiteUsername, blackUsername, gameName,
+                            gson.fromJson(resultSet.getString("game"), ChessGame.class));
+                }
+            }
+        }
+        catch (SQLException ex) {
+            throw new DataAccessException("failed to get game", ex);
+        }
+        return null;
     }
 
     public void clear() throws DataAccessException {
