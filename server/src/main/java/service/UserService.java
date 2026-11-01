@@ -68,22 +68,24 @@ public class UserService {
             throw new UnauthorizedException("Error: unauthorized");
         }
 
-        String storedPassword = userData.password();
-        boolean passwordMatches;
-
-        if (storedPassword.startsWith("$2a$") ||
-            storedPassword.startsWith("$2b$") ||
-                    storedPassword.startsWith("$2y$")) {
-            passwordMatches = BCrypt.checkpw(loginRequest.password(), storedPassword);
-        }
-        else {
-            passwordMatches = loginRequest.password().equals(storedPassword);
-        }
-
-        if (!passwordMatches) {
+//        String storedPassword = userData.password();
+//        boolean passwordMatches;
+//
+//        if (storedPassword.startsWith("$2a$") ||
+//            storedPassword.startsWith("$2b$") ||
+//                    storedPassword.startsWith("$2y$")) {
+//            passwordMatches = BCrypt.checkpw(loginRequest.password(), storedPassword);
+//        }
+//        else {
+//            passwordMatches = loginRequest.password().equals(storedPassword);
+//        }
+//
+//        if (!passwordMatches) {
+//            throw new UnauthorizedException("Error: unauthorized");
+//        }
+        if (!BCrypt.checkpw(loginRequest.password(), userData.password())) {
             throw new UnauthorizedException("Error: unauthorized");
         }
-
         String authToken = UUID.randomUUID().toString();
         AuthData authData = new AuthData(authToken, loginRequest.username());
         authDAO.createAuth(authData);
