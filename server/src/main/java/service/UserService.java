@@ -83,9 +83,7 @@ public class UserService {
         if (!passwordMatches) {
             throw new UnauthorizedException("Error: unauthorized");
         }
-//        if (!BCrypt.checkpw(loginRequest.password(), userData.password())) {
-//            throw new UnauthorizedException("Error: unauthorized");
-//        }
+
         String authToken = UUID.randomUUID().toString();
         AuthData authData = new AuthData(authToken, loginRequest.username());
         authDAO.createAuth(authData);

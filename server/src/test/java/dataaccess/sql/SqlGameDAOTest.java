@@ -113,16 +113,16 @@ public class SqlGameDAOTest {
     @Test
     public void clearSuccess() throws DataAccessException {
         ChessGame game = new ChessGame();
-        int GameID = sqlGameDAO.createGame(new GameData(0, "Alice", "Paul", "ChessGame", game));
+        int gameID = sqlGameDAO.createGame(new GameData(0, "Alice", "Paul", "ChessGame", game));
         ChessGame game1 = new ChessGame();
-        int GameID1 = sqlGameDAO.createGame(new GameData(0, "Olivia", "Ben", "ChessGame1", game1));
+        int gameID1 = sqlGameDAO.createGame(new GameData(0, "Olivia", "Ben", "ChessGame1", game1));
 
-        assertNotNull(sqlGameDAO.getGame(GameID));
-        assertNotNull(sqlGameDAO.getGame(GameID1));
+        assertNotNull(sqlGameDAO.getGame(gameID));
+        assertNotNull(sqlGameDAO.getGame(gameID1));
 
         sqlGameDAO.clear();
 
-        assertNull(sqlGameDAO.getGame(GameID));
-        assertNull(sqlGameDAO.getGame(GameID1));
+        assertNull(sqlGameDAO.getGame(gameID));
+        assertNull(sqlGameDAO.getGame(gameID1));
     }
 }
