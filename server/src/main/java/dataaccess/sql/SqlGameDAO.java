@@ -7,13 +7,46 @@ import dataaccess.DatabaseManager;
 import model.AuthData;
 import model.GameData;
 
+import javax.xml.crypto.Data;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import static javax.swing.UIManager.getInt;
 
 public class SqlGameDAO {
+
+    public Collection<GameData> listGames() throws DataAccessException {
+        Collection<GameData> games = new ArrayList<>();
+
+        var sql = "SELECT * FROM games";
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(sql)) {
+                Gson gson = new Gson();
+
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+
+                while (resultSet.next()) {
+                    int gameID = resultSet.getInt("gameID");
+                    String whiteUsername = resultSet.getString("whiteUsername");
+                    String blackUsername = resultSet.getString("blackUsername");
+                    String gameName = resultSet.getString("gameName");
+
+                    games.add(new GameData(
+                            gameID, whiteUsername, blackUsername, gameName,
+                            gson.fromJson(resultSet.getString("game"), ChessGame.class)));
+                }
+            }
+        }
+        catch (SQLException ex) {
+            throw new DataAccessException("failed to list games", ex);
+        }
+
+        return games;
+    }
 
     public int createGame(GameData data) throws DataAccessException {
         var sql = "INSERT INTO games (whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?)";
@@ -67,6 +100,8 @@ public class SqlGameDAO {
         }
         return null;
     }
+
+
 
     public void clear() throws DataAccessException {
         var sql = "DELETE FROM games";
