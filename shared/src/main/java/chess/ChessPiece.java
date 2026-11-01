@@ -188,6 +188,12 @@ public class ChessPiece {
             }
         }
 
+        addPawnMove(board, myPosition, row, col, movesPossible);
+
+        return movesPossible;
+    }
+
+    private void addPawnMove(ChessBoard board, ChessPosition myPosition, int row, int col, List<ChessMove> movesPossible) {
         if (board.getPiece(myPosition).getPieceType() == PieceType.PAWN) {
             //White
             //forward 1
@@ -278,8 +284,6 @@ public class ChessPiece {
                 }
             }
         }
-
-        return movesPossible;
     }
 
     private Collection<ChessMove> promote(ChessPosition myPosition, ChessPosition move) {
