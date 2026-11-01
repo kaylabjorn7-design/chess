@@ -1,5 +1,6 @@
 package dataaccess.sql;
 
+import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import model.AuthData;
@@ -9,7 +10,7 @@ import org.mindrot.jbcrypt.BCrypt;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class SqlAuthDAO {
+public class SqlAuthDAO implements AuthDAO {
 
     public AuthData findAuth(String token) throws DataAccessException {
         var sql = "SELECT * FROM auth WHERE authToken = ?";

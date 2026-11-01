@@ -2,8 +2,10 @@ package dataaccess.sql;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
+import dataaccess.GameDAO;
 import model.AuthData;
 import model.GameData;
 
@@ -16,7 +18,7 @@ import java.util.Collection;
 
 import static javax.swing.UIManager.getInt;
 
-public class SqlGameDAO {
+public class SqlGameDAO implements GameDAO {
 
     public Collection<GameData> listGames() throws DataAccessException {
         Collection<GameData> games = new ArrayList<>();

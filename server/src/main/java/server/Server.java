@@ -1,6 +1,8 @@
 package server;
 
-import com.google.gson.Gson;
+import dataaccess.sql.SqlAuthDAO;
+import dataaccess.sql.SqlGameDAO;
+import dataaccess.sql.SqlUserDAO;
 import io.javalin.json.JavalinGson;
 
 import dataaccess.MemoryAuthDAO;
@@ -21,26 +23,26 @@ public class Server {
             config.jsonMapper(new JavalinGson());
         });
 
-        MemoryUserDAO memoryUserDAO = new MemoryUserDAO();
-        MemoryAuthDAO memoryAuthDAO = new MemoryAuthDAO();
-        MemoryGameDAO memoryGameDAO = new MemoryGameDAO();
+        SqlUserDAO sqlUserDAO = new SqlUserDAO();
+        SqlAuthDAO sqlAuthDAO = new SqlAuthDAO();
+        SqlGameDAO sqlGameDAO = new SqlGameDAO();
 
         // Register your endpoints and exception handlers here.
 
         //Clear
-        ClearService clearService = new ClearService(memoryUserDAO, memoryAuthDAO, memoryGameDAO);
+        ClearService clearService = new ClearService(sqlUserDAO, sqlAuthDAO, sqlGameDAO);
         ClearHandler clearHandler = new ClearHandler(clearService);
         javalin.delete("/db", clearHandler::handleClear);
 
         //register, login, logout
-        UserService userService = new UserService(memoryUserDAO, memoryAuthDAO);
+        UserService userService = new UserService(sqlUserDAO, sqlAuthDAO);
         UserHandler userHandler = new UserHandler(userService);
         javalin.post("/user", userHandler::handleRegister);
         javalin.post("/session", userHandler::handleLogin);
         javalin.delete("/session", userHandler::handleLogout);
 
         //list games, create game, join game
-        GamesService gamesService = new GamesService(memoryGameDAO, memoryAuthDAO);
+        GamesService gamesService = new GamesService(sqlGameDAO, sqlAuthDAO);
         GamesHandler gamesHandler = new GamesHandler(gamesService);
         javalin.get("/game", gamesHandler::handleListGames);
         javalin.post("/game", gamesHandler::handleCreateGame);
