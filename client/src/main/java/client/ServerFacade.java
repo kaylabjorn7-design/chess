@@ -8,8 +8,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.URI;
 import java.net.URL;
 import java.net.HttpURLConnection;
+import java.net.http.HttpRequest;
 import java.nio.charset.StandardCharsets;
 
 public class ServerFacade {
@@ -48,6 +50,25 @@ public class ServerFacade {
 
         } finally {
             connection.disconnect();
+        }
+    }
+
+    private HttpRequest buildRequest(String method, String path, Object body) {
+        var request = HttpRequest.newBuilder()
+                .uri(URI.create(serverUrl + path))
+                .method(method, makeRequestBody(body));
+        if (body != null) {
+            request.setHeader("Content-Type", "application/json");
+        }
+        return request.build();
+    }
+
+    private HttpRequest.BodyPublisher makeRequestBody(Object request) {
+        if (request != null) {
+            return HttpRequest.BodyPublishers.ofString(new Gson().toJson(request));
+        }
+        else {
+            return HttpRequest.BodyPublishers.noBody();
         }
     }
 }
