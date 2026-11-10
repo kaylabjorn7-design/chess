@@ -11,7 +11,9 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
 import java.net.HttpURLConnection;
+import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 
 public class ServerFacade {
@@ -69,6 +71,16 @@ public class ServerFacade {
         }
         else {
             return HttpRequest.BodyPublishers.noBody();
+        }
+    }
+
+    private HttpResponse<String> sendRequest(HttpRequest request) throws IOException {
+        try (HttpClient client = HttpClient.newHttpClient()) {
+            return client.send(request, HttpResponse.BodyHandlers.ofString());
+        }
+        catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IOException("Request interrupted", e);
         }
     }
 }
