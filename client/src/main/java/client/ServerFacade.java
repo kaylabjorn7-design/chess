@@ -25,34 +25,9 @@ public class ServerFacade {
     }
 
     public RegisterResult register(RegisterRequest request) throws IOException {
-        URL url = new URL(serverUrl + "/user");
-        HttpURLConnection connection =
-                (HttpURLConnection) url.openConnection();
-        try {
-            connection.setRequestMethod("POST");
-
-            Gson gson = new Gson();
-            String json = gson.toJson(request);
-            connection.setDoOutput(true);
-            connection.setRequestProperty("Content-Type", "application/json");
-
-            try (OutputStream output = connection.getOutputStream()) {
-                output.write(json.getBytes(StandardCharsets.UTF_8));
-            }
-
-            int statusCode = connection.getResponseCode();
-            if (statusCode != 200) {
-                throw new IOException("Registration failed");
-            }
-
-            try (InputStream input = connection.getInputStream();
-                 InputStreamReader reader = new InputStreamReader(input, StandardCharsets.UTF_8)) {
-                return gson.fromJson(reader, RegisterResult.class);
-            }
-
-        } finally {
-            connection.disconnect();
-        }
+        HttpRequest httpRequest = buildRequest("POST", "/user", request);
+        HttpResponse<String> response = sendRequest(httpRequest);
+        return handleResponse(response, RegisterResult.class);
     }
 
     private HttpRequest buildRequest(String method, String path, Object body) {
@@ -82,5 +57,13 @@ public class ServerFacade {
             Thread.currentThread().interrupt();
             throw new IOException("Request interrupted", e);
         }
+    }
+
+    private <T> T handleResponse(HttpResponse<String> response, Class<T> resultClass) throws IOException {
+        int statusCode = response.statusCode();
+        if (statusCode < 200 || statusCode >= 300) {
+            throw new IOException("Server request failed");
+        }
+        return new Gson().fromJson(response.body(), resultClass);
     }
 }
