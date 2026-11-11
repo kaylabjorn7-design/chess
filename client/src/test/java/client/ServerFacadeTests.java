@@ -1,5 +1,7 @@
 package client;
 
+import dto.LoginRequest;
+import dto.LoginResult;
 import dto.RegisterRequest;
 import dto.RegisterResult;
 import org.junit.jupiter.api.*;
@@ -69,5 +71,28 @@ public class ServerFacadeTests {
         facade.register(request);
 
         assertThrows(IOException.class, ()-> facade.register(request));
+    }
+
+    @Test
+    public void loginSuccess() throws IOException {
+        RegisterRequest registerRequest = new RegisterRequest("Jane", "password123", "jane@byu.edu");
+        facade.register(registerRequest);
+
+        LoginRequest request = new LoginRequest("Jane", "password123");
+        LoginResult result = facade.login(request);
+
+        Assertions.assertEquals("Jane", result.username());
+        Assertions.assertNotNull(result.authToken());
+        Assertions.assertTrue(result.authToken().length() > 10);
+    }
+
+    @Test
+    public void loginFail() throws IOException {
+        RegisterRequest registerRequest = new RegisterRequest("Jane", "password123", "jane@byu.edu");
+        facade.register(registerRequest);
+
+        LoginRequest badRequest = new LoginRequest("Jane", "wrongPassword");
+
+        assertThrows(IOException.class, ()-> facade.login(badRequest));
     }
 }

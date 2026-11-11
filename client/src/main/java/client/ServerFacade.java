@@ -1,6 +1,8 @@
 package client;
 
 import com.google.gson.Gson;
+import dto.LoginRequest;
+import dto.LoginResult;
 import dto.RegisterRequest;
 import dto.RegisterResult;
 
@@ -28,6 +30,12 @@ public class ServerFacade {
         HttpRequest httpRequest = buildRequest("POST", "/user", request);
         HttpResponse<String> response = sendRequest(httpRequest);
         return handleResponse(response, RegisterResult.class);
+    }
+
+    public LoginResult login(LoginRequest request) throws IOException {
+        HttpRequest httpRequest = buildRequest("POST", "/session", request);
+        HttpResponse<String> response = sendRequest(httpRequest);
+        return handleResponse(response, LoginResult.class);
     }
 
     private HttpRequest buildRequest(String method, String path, Object body) {
