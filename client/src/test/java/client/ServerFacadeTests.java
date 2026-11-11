@@ -95,4 +95,18 @@ public class ServerFacadeTests {
 
         assertThrows(IOException.class, ()-> facade.login(badRequest));
     }
+
+    @Test
+    public void logoutSuccess() throws IOException {
+        RegisterRequest registerRequest = new RegisterRequest("Jane", "password123", "jane@byu.edu");
+        String authToken = facade.register(registerRequest).authToken();
+
+        Assertions.assertDoesNotThrow(() -> facade.logout(authToken));
+    }
+
+    //invalid token
+    @Test
+    public void logoutFail() {
+        Assertions.assertThrows(IOException.class, ()-> facade.logout("InvalidAuthToken"));
+    }
 }

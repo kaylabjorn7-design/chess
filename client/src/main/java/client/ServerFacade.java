@@ -21,29 +21,39 @@ import java.nio.charset.StandardCharsets;
 public class ServerFacade {
 
     private final String serverUrl;
+    private final HttpClient client = HttpClient.newHttpClient();
 
     public ServerFacade (int portNumber) {
         serverUrl = "http://localhost:" + portNumber;
     }
 
     public RegisterResult register(RegisterRequest request) throws IOException {
-        HttpRequest httpRequest = buildRequest("POST", "/user", request);
+        HttpRequest httpRequest = buildRequest("POST", "/user", request, null);
         HttpResponse<String> response = sendRequest(httpRequest);
         return handleResponse(response, RegisterResult.class);
     }
 
     public LoginResult login(LoginRequest request) throws IOException {
-        HttpRequest httpRequest = buildRequest("POST", "/session", request);
+        HttpRequest httpRequest = buildRequest("POST", "/session", request, null);
         HttpResponse<String> response = sendRequest(httpRequest);
         return handleResponse(response, LoginResult.class);
     }
 
-    private HttpRequest buildRequest(String method, String path, Object body) {
+    public void logout(String authToken) throws IOException {
+        HttpRequest httpRequest = buildRequest("DELETE", "/session", null, authToken);
+        HttpResponse<String> response = sendRequest(httpRequest);
+        handleResponse(response, null);
+    }
+
+    private HttpRequest buildRequest(String method, String path, Object body, String authToken) {
         var request = HttpRequest.newBuilder()
                 .uri(URI.create(serverUrl + path))
                 .method(method, makeRequestBody(body));
         if (body != null) {
             request.setHeader("Content-Type", "application/json");
+        }
+        if (authToken != null) {
+            request.setHeader("authorization", authToken);
         }
         return request.build();
     }
@@ -58,7 +68,7 @@ public class ServerFacade {
     }
 
     private HttpResponse<String> sendRequest(HttpRequest request) throws IOException {
-        try (HttpClient client = HttpClient.newHttpClient()) {
+        try {
             return client.send(request, HttpResponse.BodyHandlers.ofString());
         }
         catch (InterruptedException e) {
@@ -72,6 +82,9 @@ public class ServerFacade {
         if (statusCode < 200 || statusCode >= 300) {
             throw new IOException("Server request failed");
         }
-        return new Gson().fromJson(response.body(), resultClass);
+        if (resultClass != null) {
+            return new Gson().fromJson(response.body(), resultClass);
+        }
+        return null;
     }
 }
