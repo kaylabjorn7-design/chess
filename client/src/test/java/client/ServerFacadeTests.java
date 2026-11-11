@@ -4,12 +4,15 @@ import dto.RegisterRequest;
 import dto.RegisterResult;
 import org.junit.jupiter.api.*;
 import server.Server;
+import service.AlreadyTakenException;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 public class ServerFacadeTests {
@@ -57,5 +60,14 @@ public class ServerFacadeTests {
         Assertions.assertEquals("Jane", result.username());
         Assertions.assertNotNull(result.authToken());
         Assertions.assertTrue(result.authToken().length() > 10);
+    }
+
+    //same username
+    @Test
+    public void registerFail() throws IOException {
+        RegisterRequest request = new RegisterRequest("Jane", "password123", "jane@byu.edu");
+        facade.register(request);
+
+        assertThrows(IOException.class, ()-> facade.register(request));
     }
 }
