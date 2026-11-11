@@ -3,7 +3,6 @@ package client;
 import dto.*;
 import org.junit.jupiter.api.*;
 import server.Server;
-import service.AlreadyTakenException;
 
 import java.io.IOException;
 import java.net.URI;
@@ -118,7 +117,13 @@ public class ServerFacadeTests {
         CreateGameResult result = facade.createGame(request, authToken);
 
         Assertions.assertTrue(result.gameID() > 0);
-        //Assertions. game is on the listGames
+
+        ListGamesResult listGamesResult = facade.listGames(authToken);
+        Collection<GameSummary> games = listGamesResult.games();
+
+        Assertions.assertTrue(games.stream().anyMatch(
+                game -> game.gameID() == result.gameID() &&
+                game.gameName().equals("myGame")));
     }
 
     @Test
@@ -148,5 +153,41 @@ public class ServerFacadeTests {
     @Test
     public void listGamesFail() {
         Assertions.assertThrows(IOException.class, ()-> facade.listGames("InvalidAuthToken"));
+    }
+
+    @Test
+    public void joinGameSuccess() throws IOException {
+        RegisterRequest registerRequest = new RegisterRequest("Jane", "password123", "jane@byu.edu");
+        String authToken = facade.register(registerRequest).authToken();
+
+        int gameID = facade.createGame(new CreateGameRequest("myGame"), authToken).gameID();
+
+        JoinGameRequest request = new JoinGameRequest("WHITE", gameID);
+        facade.joinGame(request, authToken);
+
+        ListGamesResult listGamesResult = facade.listGames(authToken);
+        Collection<GameSummary> games = listGamesResult.games();
+
+        Assertions.assertTrue(games.stream().anyMatch(game ->
+                game.gameID() == gameID &&
+                        "Jane".equals(game.whiteUsername())
+        ));
+    }
+
+    //join with a filled color
+    @Test
+    public void joinGameFail() throws IOException {
+        RegisterRequest registerRequest = new RegisterRequest("Jane", "password123", "jane@byu.edu");
+        String janeToken = facade.register(registerRequest).authToken();
+
+        RegisterRequest registerRequest1 = new RegisterRequest("Paul", "password123", "paul@byu.edu");
+        String paulToken = facade.register(registerRequest1).authToken();
+
+        int gameID = facade.createGame(new CreateGameRequest("myGame"), janeToken).gameID();
+
+        JoinGameRequest request = new JoinGameRequest("WHITE", gameID);
+        facade.joinGame(request, janeToken);
+
+        Assertions.assertThrows(IOException.class, ()-> facade.joinGame(request, paulToken));
     }
 }

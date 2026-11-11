@@ -4,16 +4,10 @@ import com.google.gson.Gson;
 import dto.*;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.URI;
-import java.net.URL;
-import java.net.HttpURLConnection;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
 
 public class ServerFacade {
 
@@ -52,6 +46,12 @@ public class ServerFacade {
         HttpRequest httpRequest = buildRequest("GET", "/game", null, authToken);
         HttpResponse<String> response = sendRequest(httpRequest);
         return handleResponse(response, ListGamesResult.class);
+    }
+
+    public void joinGame(JoinGameRequest request, String authToken) throws IOException {
+        HttpRequest httpRequest = buildRequest("PUT", "/game", request, authToken);
+        HttpResponse<String> response = sendRequest(httpRequest);
+        handleResponse(response, null);
     }
 
     private HttpRequest buildRequest(String method, String path, Object body, String authToken) {
