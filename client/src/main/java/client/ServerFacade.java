@@ -1,10 +1,7 @@
 package client;
 
 import com.google.gson.Gson;
-import dto.LoginRequest;
-import dto.LoginResult;
-import dto.RegisterRequest;
-import dto.RegisterResult;
+import dto.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,6 +40,18 @@ public class ServerFacade {
         HttpRequest httpRequest = buildRequest("DELETE", "/session", null, authToken);
         HttpResponse<String> response = sendRequest(httpRequest);
         handleResponse(response, null);
+    }
+
+    public CreateGameResult createGame(CreateGameRequest request, String authToken) throws IOException {
+        HttpRequest httpRequest = buildRequest("POST", "/game", request, authToken);
+        HttpResponse<String> response = sendRequest(httpRequest);
+        return handleResponse(response, CreateGameResult.class);
+    }
+
+    public ListGamesResult listGames(String authToken) throws IOException {
+        HttpRequest httpRequest = buildRequest("GET", "/game", null, authToken);
+        HttpResponse<String> response = sendRequest(httpRequest);
+        return handleResponse(response, ListGamesResult.class);
     }
 
     private HttpRequest buildRequest(String method, String path, Object body, String authToken) {

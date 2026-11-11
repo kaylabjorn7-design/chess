@@ -1,9 +1,6 @@
 package client;
 
-import dto.LoginRequest;
-import dto.LoginResult;
-import dto.RegisterRequest;
-import dto.RegisterResult;
+import dto.*;
 import org.junit.jupiter.api.*;
 import server.Server;
 import service.AlreadyTakenException;
@@ -13,8 +10,10 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public class ServerFacadeTests {
@@ -108,5 +107,46 @@ public class ServerFacadeTests {
     @Test
     public void logoutFail() {
         Assertions.assertThrows(IOException.class, ()-> facade.logout("InvalidAuthToken"));
+    }
+
+    @Test
+    public void createGameSuccess() throws IOException {
+        RegisterRequest registerRequest = new RegisterRequest("Jane", "password123", "jane@byu.edu");
+        String authToken = facade.register(registerRequest).authToken();
+
+        CreateGameRequest request = new CreateGameRequest("myGame");
+        CreateGameResult result = facade.createGame(request, authToken);
+
+        Assertions.assertTrue(result.gameID() > 0);
+        //Assertions. game is on the listGames
+    }
+
+    @Test
+    public void createGameFail() {
+        CreateGameRequest request = new CreateGameRequest("myGame");
+
+        Assertions.assertThrows(IOException.class, ()-> facade.createGame(request, "InvalidAuthToken"));
+    }
+
+    @Test
+    public void listGamesSuccess() throws IOException {
+        RegisterRequest registerRequest = new RegisterRequest("Jane", "password123", "jane@byu.edu");
+        String authToken = facade.register(registerRequest).authToken();
+
+        facade.createGame(new CreateGameRequest("myGame"), authToken);
+        facade.createGame(new CreateGameRequest("myGame1"), authToken);
+
+        ListGamesResult result = facade.listGames(authToken);
+        Collection<GameSummary> games = result.games();
+
+        Assertions.assertEquals(2, games.size());
+        assertTrue(games.stream().anyMatch(game -> game.gameName().equals("myGame")));
+        assertTrue(games.stream().anyMatch(game -> game.gameName().equals("myGame1")));
+    }
+
+    //invalid authToken
+    @Test
+    public void listGamesFail() {
+        Assertions.assertThrows(IOException.class, ()-> facade.listGames("InvalidAuthToken"));
     }
 }
