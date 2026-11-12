@@ -143,9 +143,9 @@ public class ChessClient {
     private void listGames() {
         try {
             ListGamesResult result = facade.listGames(authToken);
-            Collection<GameSummary> games = result.games();
+            gameList = new ArrayList<>(result.games());
             int gameNumber = 1;
-            for (GameSummary game : games) {
+            for (GameSummary game : gameList) {
                 System.out.println(gameNumber + ". " + game.gameName());
                 if (game.whiteUsername() == null) {
                     System.out.println("   White: Open");
@@ -168,42 +168,55 @@ public class ChessClient {
     }
 
     private void joinGame() {
-        if (gameList.isEmpty()) {
-            System.out.println("Sorry, there are no active games to join");
+        GameSummary selectedGame = selectGame();
+        if (selectedGame == null) return;
+
+        System.out.print("Which color would you like to be? ");
+        String selectedColor = scanner.nextLine().trim().toLowerCase();
+        if (!selectedColor.equals("black") && !selectedColor.equals("white")) {
+            System.out.println("Please choose a valid color: 'black' or 'white'");
             return;
         }
-        System.out.print("Please select which game you would like to join by typing its number ");
+
+        JoinGameRequest request = new JoinGameRequest(selectedColor, selectedGame.gameID());
+
+        try {
+            facade.joinGame(request, authToken);
+            System.out.println("Joined" + selectedGame.gameName() + "as " + selectedColor + "!");
+            //draw chessboard()
+        }
+        catch(IOException e) {
+            System.out.println("Failed to join game. Please try again");
+        }
+    }
+
+    private void observeGame() {
+        GameSummary selectedGame = selectGame();
+        if (selectedGame == null) return;
+
+        System.out.println("Observing " + selectedGame.gameName() + "!");
+        //draw chessboard()
+    }
+
+    private GameSummary selectGame() {
+        if (gameList.isEmpty()) {
+            System.out.println("Sorry, there are no games");
+            return null;
+        }
+        System.out.print("Select a game by typing its number: ");
         try {
             int gameNumber = Integer.parseInt(scanner.nextLine());
             if (gameNumber > gameList.size() || gameNumber < 1) {
-                System.out.println("Invalid game number. Type 'list games' to see available games.");
-                return;
+                System.out.println("Invalid game number. Type 'list games' to see available games");
+                return null;
             }
-            GameSummary selectedGame = gameList.get(gameNumber - 1);
-
-            System.out.print("Which color would you like to be? ");
-            String selectedColor = scanner.nextLine().trim().toUpperCase();
-            if (!selectedColor.equals("BLACK") && !selectedColor.equals("WHITE")) {
-                System.out.println("Please choose a valid color: 'black' or 'white'");
-                return;
-            }
-
-            JoinGameRequest request = new JoinGameRequest(selectedColor, selectedGame.gameID());
-
-            try {
-                facade.joinGame(request, authToken);
-                //draw chessboard()
-            }
-            catch(IOException e) {
-                System.out.println("Failed to join game. Please try again");
-            }
+            return gameList.get(gameNumber - 1);
         }
         catch (NumberFormatException e) {
             System.out.println("Please enter a valid number");
         }
+        return null;
     }
-
-    private void observeGame() {}
 
     private void logout() {
         try {
@@ -211,6 +224,7 @@ public class ChessClient {
             System.out.println("Logged out successfully");
             this.username = null;
             this.authToken = null;
+            gameList.clear();
         }
         catch(IOException e) {
             System.out.println("Logout failed. Please try again");
