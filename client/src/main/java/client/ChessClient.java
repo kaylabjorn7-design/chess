@@ -29,6 +29,7 @@ public class ChessClient {
         System.out.println("Welcome to Chess!");
         System.out.println();
         System.out.println("Type 'help' to see available commands");
+        System.out.println();
 
         while (running) {
             if (authToken != null) {
@@ -68,12 +69,13 @@ public class ChessClient {
     }
 
     private void preLoginHelp() {
-        System.out.println("Available Commands:");
         System.out.println();
+        System.out.println("Available Commands:");
         System.out.println("help      - Show available commands");
         System.out.println("login     - Login to your account");
         System.out.println("register  - Create a new account");
         System.out.println("quit      - Exit the program");
+        System.out.println();
     }
 
     private void login() {
@@ -88,10 +90,15 @@ public class ChessClient {
             this.username = result.username();
             this.authToken = result.authToken();
 
+            System.out.println();
             System.out.println("Welcome back, " + username + "!");
+            System.out.println();
+            System.out.println("Type 'help' to see available commands");
+            System.out.println();
         }
         catch (IOException e) {
             System.out.println("Login failed. Please try again");
+            System.out.println();
         }
     }
 
@@ -102,6 +109,7 @@ public class ChessClient {
         String password = scanner.nextLine();
         System.out.print("email: ");
         String email = scanner.nextLine();
+        System.out.println();
 
         RegisterRequest request = new RegisterRequest(username, password, email);
         try {
@@ -110,6 +118,9 @@ public class ChessClient {
             this.authToken = result.authToken();
 
             System.out.println("Welcome, " + username + "!");
+            System.out.println();
+            System.out.println("Type 'help' to see available commands");
+            System.out.println();
         }
         catch (IOException e) {
             System.out.println("Registration failed. Please try again");
@@ -117,8 +128,8 @@ public class ChessClient {
     }
 
     private void postLoginHelp() {
-        System.out.println("Available Commands:");
         System.out.println();
+        System.out.println("Available Commands:");
         System.out.println("help          - Show available commands");
         System.out.println("create game   - Create a new game");
         System.out.println("list games    - List all active games");
@@ -126,6 +137,7 @@ public class ChessClient {
         System.out.println("observe game  - Watch an existing game");
         System.out.println("logout        - Logout of your account");
         System.out.println("quit          - Exit the program");
+        System.out.println();
     }
 
     private void createGame() {
@@ -137,6 +149,7 @@ public class ChessClient {
             facade.createGame(request, authToken);
 
             System.out.println(gameName + " created!");
+            System.out.println();
         }
         catch (IOException e) {
             System.out.println("Unable to create game. Please try again");
@@ -147,23 +160,28 @@ public class ChessClient {
         try {
             ListGamesResult result = facade.listGames(authToken);
             gameList = new ArrayList<>(result.games());
+
+            System.out.println();
+            System.out.println("Current Games:");
+
             int gameNumber = 1;
             for (GameSummary game : gameList) {
                 System.out.println(gameNumber + ". " + game.gameName());
                 if (game.whiteUsername() == null) {
-                    System.out.println("   White: Open");
+                    System.out.println("    White: Open");
                 }
                 else {
-                    System.out.println("   White: " + game.whiteUsername());
+                    System.out.println("    White: " + game.whiteUsername());
                 }
                 if (game.blackUsername() == null) {
-                    System.out.println("   Black: Open");
+                    System.out.println("    Black: Open");
                 }
                 else {
-                    System.out.println("   Black: " + game.blackUsername());
+                    System.out.println("    Black: " + game.blackUsername());
                 }
                 gameNumber++;
             }
+            System.out.println();
         }
         catch (IOException e) {
             System.out.println("Unable to list games. Please try again");
@@ -176,6 +194,7 @@ public class ChessClient {
 
         System.out.print("Which color would you like to be? ");
         String selectedColor = scanner.nextLine().trim().toLowerCase();
+        System.out.println();
         if (!selectedColor.equals("black") && !selectedColor.equals("white")) {
             System.out.println("Please choose a valid color: 'black' or 'white'");
             return;
@@ -185,11 +204,13 @@ public class ChessClient {
 
         try {
             facade.joinGame(request, authToken);
+            System.out.println();
             System.out.println("Joined " + selectedGame.gameName() + " as " + selectedColor + "!");
             createBoard(selectedColor);
         }
         catch(IOException e) {
             System.out.println("Failed to join game. Please try again");
+            System.out.println();
         }
     }
 
@@ -197,6 +218,7 @@ public class ChessClient {
         GameSummary selectedGame = selectGame();
         if (selectedGame == null) return;
 
+        System.out.println();
         System.out.println("Observing " + selectedGame.gameName() + "!");
         createBoard("white");
     }
@@ -206,11 +228,14 @@ public class ChessClient {
         ChessBoard board = new ChessBoard();
         board.resetBoard();
         renderer.drawBoard(board, color);
+        System.out.println();
     }
 
     private GameSummary selectGame() {
+        listGames();
         if (gameList.isEmpty()) {
             System.out.println("Sorry, there are no games");
+            System.out.println();
             return null;
         }
         System.out.print("Select a game by typing its number: ");
@@ -232,12 +257,14 @@ public class ChessClient {
         try {
             facade.logout(authToken);
             System.out.println("Logged out successfully");
+            System.out.println();
             this.username = null;
             this.authToken = null;
             gameList.clear();
         }
         catch(IOException e) {
             System.out.println("Logout failed. Please try again");
+            System.out.println();
         }
     }
 
@@ -250,5 +277,6 @@ public class ChessClient {
 
     private void unknownCommand() {
         System.out.println("Command not recognized. Type 'help' to see available commands");
+        System.out.println();
     }
 }

@@ -11,3 +11,9 @@ public class ClientMain {
 
 //Alice
 //password
+
+//Jeremy
+//iloveyou
+
+//Kayla
+//password
