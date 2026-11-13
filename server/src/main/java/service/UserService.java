@@ -2,13 +2,11 @@ package service;
 
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
-import dataaccess.MemoryAuthDAO;
 import dataaccess.UserDAO;
 import dto.LoginRequest;
 import dto.LoginResult;
 import dto.RegisterRequest;
 import dto.RegisterResult;
-import io.javalin.http.UnauthorizedResponse;
 import model.AuthData;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;

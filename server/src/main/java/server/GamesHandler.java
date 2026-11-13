@@ -1,7 +1,6 @@
 package server;
 
 import dataaccess.DataAccessException;
-import dto.*;
 import io.javalin.http.Context;
 import model.GameData;
 import service.AlreadyTakenException;
@@ -12,6 +11,8 @@ import service.UnauthorizedException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+
+import dto.*;
 
 public class GamesHandler {
     private final GamesService gamesService;

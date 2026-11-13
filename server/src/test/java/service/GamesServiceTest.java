@@ -4,7 +4,6 @@ import chess.ChessGame;
 import dataaccess.DataAccessException;
 import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryGameDAO;
-import dataaccess.MemoryUserDAO;
 import dto.CreateGameRequest;
 import dto.CreateGameResult;
 import dto.JoinGameRequest;
