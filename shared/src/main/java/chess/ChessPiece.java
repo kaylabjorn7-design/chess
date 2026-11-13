@@ -152,16 +152,7 @@ public class ChessPiece {
                     new ChessPosition(row, col - 1)
             );
 
-            for (ChessPosition move : kingMoves) {
-                if (inBounds(move) && board.getPiece(move) == null) {
-                    movesPossible.add(new ChessMove(myPosition, move, null));
-                }
-                else {
-                    if (inBounds(move) && enemy(board, myPosition, move)) {
-                        movesPossible.add(new ChessMove(myPosition, move, null));
-                    }
-                }
-            }
+            addKnightAndKingMoves(board, myPosition, kingMoves, movesPossible);
         }
 
         if (board.getPiece(myPosition).getPieceType() == PieceType.KNIGHT) {
@@ -176,16 +167,7 @@ public class ChessPiece {
                     new ChessPosition(row - 1, col - 2)
             );
 
-            for (ChessPosition move : knightMoves) {
-                if (inBounds(move) && board.getPiece(move) == null) {
-                    movesPossible.add(new ChessMove(myPosition, move, null));
-                }
-                else {
-                    if (inBounds(move) && enemy(board, myPosition, move)) {
-                        movesPossible.add(new ChessMove(myPosition, move, null));
-                    }
-                }
-            }
+            addKnightAndKingMoves(board, myPosition, knightMoves, movesPossible);
         }
 
         addPawnMove(board, myPosition, row, col, movesPossible);
@@ -193,94 +175,115 @@ public class ChessPiece {
         return movesPossible;
     }
 
+    private void addKnightAndKingMoves(ChessBoard board, ChessPosition myPosition, List<ChessPosition> pieceMoves, List<ChessMove> movesPossible) {
+        for (ChessPosition move : pieceMoves) {
+            if (inBounds(move) && board.getPiece(move) == null) {
+                movesPossible.add(new ChessMove(myPosition, move, null));
+            }
+            else {
+                if (inBounds(move) && enemy(board, myPosition, move)) {
+                    movesPossible.add(new ChessMove(myPosition, move, null));
+                }
+            }
+        }
+    }
+
     private void addPawnMove(ChessBoard board, ChessPosition myPosition, int row, int col, List<ChessMove> movesPossible) {
         if (board.getPiece(myPosition).getPieceType() == PieceType.PAWN) {
             //White
             //forward 1
             if (getTeamColor() == WHITE) {
-                ChessPosition move = new ChessPosition(row + 1, col);
-                if (inBounds(move) && board.getPiece(move) == null) {
-                    if (row == 7) {
-                        movesPossible.addAll(promote(myPosition, move));;
-                    }
-                    else {
-                        movesPossible.add(new ChessMove(myPosition, move, null));
-                    }
-                    //forward 2
-                    if(row == 2) {
-                        move = new ChessPosition(row + 2, col);
-                        if (inBounds(move) && board.getPiece(move) == null) {
-                            movesPossible.add(new ChessMove(myPosition, move, null));
-                        }
-                    }
-                }
-                //capture left
-                move = new ChessPosition(row + 1, col - 1);
-                if (inBounds(move) && board.getPiece(move) != null) {
-                    if (enemy(board, myPosition, move)) {
-                        if (row == 7) {
-                            movesPossible.addAll(promote(myPosition, move));;
-                        }
-                        else {
-                            movesPossible.add(new ChessMove(myPosition, move, null));
-                        }
-                    }
-                }
-                //capture right
-                move = new ChessPosition(row + 1, col + 1);
-                if (inBounds(move) && board.getPiece(move) != null) {
-                    if (enemy(board, myPosition, move)) {
-                        if (row == 7) {
-                            movesPossible.addAll(promote(myPosition, move));
-                        }
-                        else {
-                            movesPossible.add(new ChessMove(myPosition, move, null));
-                        }
-                    }
-                }
+                whitePawnExtracted(board, myPosition, row, col, movesPossible);
             }
             //Black
             if (getTeamColor() == BLACK) {
-                //forward 1
-                ChessPosition move = new ChessPosition(row - 1, col);
+                blackPawnExtracted(board, myPosition, row, col, movesPossible);
+            }
+        }
+    }
+
+    private void blackPawnExtracted(ChessBoard board, ChessPosition myPosition, int row, int col, List<ChessMove> movesPossible) {
+        //forward 1
+        ChessPosition move = new ChessPosition(row - 1, col);
+        if (inBounds(move) && board.getPiece(move) == null) {
+            if (row == 2) {
+                movesPossible.addAll(promote(myPosition, move));;
+            }
+            else {
+                movesPossible.add(new ChessMove(myPosition, move, null));
+            }
+            //forward 2
+            if(row == 7) {
+                move = new ChessPosition(row - 2, col);
                 if (inBounds(move) && board.getPiece(move) == null) {
-                    if (row == 2) {
-                        movesPossible.addAll(promote(myPosition, move));;
-                    }
-                    else {
-                        movesPossible.add(new ChessMove(myPosition, move, null));
-                    }
-                    //forward 2
-                    if(row == 7) {
-                        move = new ChessPosition(row - 2, col);
-                        if (inBounds(move) && board.getPiece(move) == null) {
-                            movesPossible.add(new ChessMove(myPosition, move, null));
-                        }
-                    }
+                    movesPossible.add(new ChessMove(myPosition, move, null));
                 }
-                //capture left
-                move = new ChessPosition(row - 1, col + 1);
-                if (inBounds(move) && board.getPiece(move) != null) {
-                    if (enemy(board, myPosition, move)) {
-                        if (row == 2) {
-                            movesPossible.addAll(promote(myPosition, move));;
-                        }
-                        else {
-                            movesPossible.add(new ChessMove(myPosition, move, null));
-                        }
-                    }
+            }
+        }
+        //capture left
+        move = new ChessPosition(row - 1, col + 1);
+        if (inBounds(move) && board.getPiece(move) != null) {
+            if (enemy(board, myPosition, move)) {
+                if (row == 2) {
+                    movesPossible.addAll(promote(myPosition, move));;
                 }
-                //capture right
-                move = new ChessPosition(row - 1, col - 1);
-                if (inBounds(move) && board.getPiece(move) != null) {
-                    if (enemy(board, myPosition, move)) {
-                        if (row == 2) {
-                            movesPossible.addAll(promote(myPosition, move));
-                        }
-                        else {
-                            movesPossible.add(new ChessMove(myPosition, move, null));
-                        }
-                    }
+                else {
+                    movesPossible.add(new ChessMove(myPosition, move, null));
+                }
+            }
+        }
+        //capture right
+        move = new ChessPosition(row - 1, col - 1);
+        if (inBounds(move) && board.getPiece(move) != null) {
+            if (enemy(board, myPosition, move)) {
+                if (row == 2) {
+                    movesPossible.addAll(promote(myPosition, move));
+                }
+                else {
+                    movesPossible.add(new ChessMove(myPosition, move, null));
+                }
+            }
+        }
+    }
+
+    private void whitePawnExtracted(ChessBoard board, ChessPosition myPosition, int row, int col, List<ChessMove> movesPossible) {
+        ChessPosition move = new ChessPosition(row + 1, col);
+        if (inBounds(move) && board.getPiece(move) == null) {
+            if (row == 7) {
+                movesPossible.addAll(promote(myPosition, move));;
+            }
+            else {
+                movesPossible.add(new ChessMove(myPosition, move, null));
+            }
+            //forward 2
+            if(row == 2) {
+                move = new ChessPosition(row + 2, col);
+                if (inBounds(move) && board.getPiece(move) == null) {
+                    movesPossible.add(new ChessMove(myPosition, move, null));
+                }
+            }
+        }
+        //capture left
+        move = new ChessPosition(row + 1, col - 1);
+        if (inBounds(move) && board.getPiece(move) != null) {
+            if (enemy(board, myPosition, move)) {
+                if (row == 7) {
+                    movesPossible.addAll(promote(myPosition, move));;
+                }
+                else {
+                    movesPossible.add(new ChessMove(myPosition, move, null));
+                }
+            }
+        }
+        //capture right
+        move = new ChessPosition(row + 1, col + 1);
+        if (inBounds(move) && board.getPiece(move) != null) {
+            if (enemy(board, myPosition, move)) {
+                if (row == 7) {
+                    movesPossible.addAll(promote(myPosition, move));
+                }
+                else {
+                    movesPossible.add(new ChessMove(myPosition, move, null));
                 }
             }
         }
