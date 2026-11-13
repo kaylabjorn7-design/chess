@@ -188,7 +188,9 @@ public class ChessClient {
 
     private void joinGame() {
         GameSummary selectedGame = selectGame();
-        if (selectedGame == null) return;
+        if (selectedGame == null) {
+            return;
+        }
 
         System.out.print("Which color would you like to be? ");
         String selectedColor = scanner.nextLine().trim().toLowerCase();
@@ -214,7 +216,9 @@ public class ChessClient {
 
     private void observeGame() {
         GameSummary selectedGame = selectGame();
-        if (selectedGame == null) return;
+        if (selectedGame == null) {
+            return;
+        }
 
         System.out.println();
         System.out.println("Observing " + selectedGame.gameName() + "!");
