@@ -1,5 +1,7 @@
 package client;
 
+import chess.ChessBoard;
+import chess.ChessGame;
 import dto.*;
 
 import java.io.IOException;
@@ -16,6 +18,7 @@ public class ChessClient {
     private String username = null;
     private String authToken = null;
     private List<GameSummary> gameList = new ArrayList<>();
+    ChessBoardRenderer renderer = new ChessBoardRenderer();
 
     public ChessClient(int port) {
         facade = new ServerFacade(port);
@@ -183,7 +186,7 @@ public class ChessClient {
         try {
             facade.joinGame(request, authToken);
             System.out.println("Joined" + selectedGame.gameName() + "as " + selectedColor + "!");
-            //draw chessboard()
+            createBoard(selectedColor);
         }
         catch(IOException e) {
             System.out.println("Failed to join game. Please try again");
@@ -195,7 +198,14 @@ public class ChessClient {
         if (selectedGame == null) return;
 
         System.out.println("Observing " + selectedGame.gameName() + "!");
-        //draw chessboard()
+        createBoard("white");
+    }
+
+    private void createBoard(String perspectiveColor) {
+        ChessGame.TeamColor color = ChessGame.TeamColor.valueOf(perspectiveColor.toUpperCase());
+        ChessBoard board = new ChessBoard();
+        board.resetBoard();
+        renderer.drawBoard(board, color);
     }
 
     private GameSummary selectGame() {
