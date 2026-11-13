@@ -181,11 +181,11 @@ public class ChessClient {
             return;
         }
 
-        JoinGameRequest request = new JoinGameRequest(selectedColor, selectedGame.gameID());
+        JoinGameRequest request = new JoinGameRequest(selectedColor.toUpperCase(), selectedGame.gameID());
 
         try {
             facade.joinGame(request, authToken);
-            System.out.println("Joined" + selectedGame.gameName() + "as " + selectedColor + "!");
+            System.out.println("Joined " + selectedGame.gameName() + " as " + selectedColor + "!");
             createBoard(selectedColor);
         }
         catch(IOException e) {
